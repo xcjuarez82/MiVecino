@@ -347,7 +347,7 @@ function DatosPrivada({ privada, refrescar }) {
           </span>
         </p>
         <p className="text-[11px] text-amber-700 mt-1">
-          Cada casa admite hasta 2 usuarios. Un usuario adicional requiere una licencia extra.
+          Tu plan permite hasta {privada?.max_usuarios_casa ?? 2} usuarios por casa y {privada?.max_casas ?? 10} casas. Para más, activa una licencia.
         </p>
       </div>
       {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
@@ -446,52 +446,83 @@ function FilaExpandible({ titulo, detalle }) {
 }
 
 function LicenciaConfig({ privada, refrescar }) {
-  const [clave, setClave] = useState(privada?.licencia || '')
+  const [clave, setClave] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [msg, setMsg] = useState('')
   const [error, setError] = useState('')
 
-  const guardar = async (e) => {
+  const maxUsuarios = privada?.max_usuarios_casa ?? 2
+  const maxCasas = privada?.max_casas ?? 10
+  const esPago = maxUsuarios > 2 || maxCasas > 10
+
+  const activar = async (e) => {
     e.preventDefault()
     setError('')
     setMsg('')
     const val = clave.trim()
-    if (val && !/^[0-9a-fA-F-]+$/.test(val))
-      return setError('La clave debe ser hexadecimal (0-9, a-f, guiones).')
+    if (!val) return setError('Escribe tu clave de licencia.')
     setGuardando(true)
-    const { error } = await supabase
-      .from('privadas')
-      .update({ licencia: val || null })
-      .eq('id', privada.id)
+    const { data, error } = await supabase.rpc('activar_licencia', {
+      p_privada_id: privada.id,
+      p_clave: val,
+    })
     setGuardando(false)
-    if (error) return setError('No se pudo: ' + error.message)
-    setMsg(val ? '¡Licencia guardada!' : 'Licencia quitada.')
+    if (error) {
+      const m = error.message || ''
+      if (m.includes('CLAVE_INVALIDA')) return setError('Esa clave no es válida.')
+      if (m.includes('CLAVE_USADA')) return setError('Esa clave ya se usó en otra privada.')
+      return setError('No se pudo: ' + m)
+    }
+    setMsg(
+      '¡Licencia activada! Tu plan ahora permite ' +
+        (data?.usuarios_por_casa ?? 5) +
+        ' usuarios por casa y hasta ' +
+        (data?.casas_max ?? 100) +
+        ' casas.',
+    )
+    setClave('')
     await refrescar()
   }
 
   return (
-    <form onSubmit={guardar} className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
+    <form onSubmit={activar} className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
       <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Licencia</p>
-      <p className="text-xs text-slate-500 -mt-1">
-        Estado:{' '}
-        <b>{privada?.licencia ? 'Con licencia' : 'Versión gratuita (Free)'}</b>. Si tienes una clave
-        de licencia, ingrésala aquí.
-      </p>
-      <input
-        value={clave}
-        onChange={(e) => setClave(e.target.value)}
-        placeholder="Ej. 3F9A-1C7E-8B20"
-        className="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-mono"
-      />
+      <div className="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 leading-relaxed">
+        Plan actual:{' '}
+        <b className={esPago ? 'text-emerald-700' : 'text-slate-700'}>
+          {esPago ? 'De pago' : 'Gratuito (Free)'}
+        </b>
+        <br />
+        {maxUsuarios} usuarios por casa · hasta {maxCasas} casas
+      </div>
+
+      {esPago ? (
+        <p className="text-sm text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2">
+          Tu licencia está activa. ✅
+        </p>
+      ) : (
+        <>
+          <p className="text-xs text-slate-500 -mt-1">
+            ¿Tienes una clave? Ingrésala para activar el plan de pago (5 usuarios por casa, 100
+            casas).
+          </p>
+          <input
+            value={clave}
+            onChange={(e) => setClave(e.target.value)}
+            placeholder="Ej. MV-7F3A-9K2P-X4B8"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-mono uppercase"
+          />
+          <button
+            type="submit"
+            disabled={guardando}
+            className="w-full rounded-lg bg-teal-600 hover:bg-teal-700 disabled:opacity-60 text-white font-semibold py-2.5"
+          >
+            {guardando ? 'Activando…' : 'Activar licencia'}
+          </button>
+        </>
+      )}
       {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
       {msg && <p className="text-sm text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2">{msg}</p>}
-      <button
-        type="submit"
-        disabled={guardando}
-        className="w-full rounded-lg bg-teal-600 hover:bg-teal-700 disabled:opacity-60 text-white font-semibold py-2.5"
-      >
-        {guardando ? 'Guardando…' : 'Guardar licencia'}
-      </button>
     </form>
   )
 }
