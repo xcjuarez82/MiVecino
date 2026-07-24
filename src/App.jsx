@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppGate from './components/AppGate'
+import ActualizarApp from './components/ActualizarApp'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Pagos from './pages/Pagos'
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="*" element={<Placeholder titulo="Página no encontrada" icono="🧭" />} />
         </Routes>
       </BrowserRouter>
+      <ActualizarApp />
     </AuthProvider>
   )
 }
