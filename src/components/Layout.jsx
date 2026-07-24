@@ -18,15 +18,15 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
       <header className="bg-teal-700 text-white sticky top-0 z-10 shadow">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="min-w-0">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
             <p className="text-[13px] leading-tight text-teal-100">Mi Vecino</p>
             <p className="font-semibold truncate">
               {privada?.nombre || 'Sin privada'}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-right mr-1">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="hidden sm:block text-right mr-1">
               <p className="text-sm font-medium leading-tight truncate max-w-[110px]">
                 {vecino?.nombre || 'Vecino'}
               </p>
