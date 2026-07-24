@@ -286,12 +286,19 @@ function DatosPrivada({ privada, refrescar }) {
     setError('')
     setMsg('')
     if (!nombre.trim()) return setError('El nombre de la privada es obligatorio.')
+    // Campo vacío = no cambiar el número de casas (evita dejarlo en 0 sin querer).
+    const nCasas = numCasas.trim() === '' ? null : Math.max(parseInt(numCasas, 10) || 0, 0)
+    if (nCasas !== null && privada?.max_casas && nCasas > privada.max_casas) {
+      return setError(
+        `Tu plan permite hasta ${privada.max_casas} casas. Baja el número (o activa una licencia). Tu nombre y dirección sí se pueden guardar.`,
+      )
+    }
     setGuardando(true)
     const { error } = await supabase.rpc('configurar_privada', {
       p_privada_id: privada.id,
       p_nombre: nombre.trim(),
       p_direccion: direccion.trim() || null,
-      p_numero_casas: parseInt(numCasas || '0', 10) || 0,
+      p_numero_casas: nCasas,
     })
     setGuardando(false)
     if (error) return setError('No se pudo guardar: ' + error.message)
