@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
@@ -65,7 +65,7 @@ export default function Configuracion() {
       <Informacion />
 
       {/* ---- Donaciones al desarrollador ---- */}
-      <Donaciones isAdmin={isAdmin} />
+      <Donaciones />
 
       {/* ---- Eliminar cuenta ---- */}
       <EliminarCuenta />
@@ -496,47 +496,15 @@ function LicenciaConfig({ privada, refrescar }) {
   )
 }
 
-function Donaciones({ isAdmin }) {
-  const [links, setLinks] = useState(null)
-  const [mp, setMp] = useState('')
-  const [pp, setPp] = useState('')
-  const [editar, setEditar] = useState(false)
-  const [guardando, setGuardando] = useState(false)
-  const [msg, setMsg] = useState('')
+// === Donaciones al desarrollador ===
+// Enlaces controlados ÚNICAMENTE por el desarrollador (Itouch). NO son editables
+// desde la app: ningún administrador ni vecino puede agregar ni cambiar estos
+// enlaces de cobro. Para actualizarlos se cambian aquí y se vuelve a publicar.
+const DONAR_MERCADOPAGO = '' // enlace oficial de Itouch (Mercado Pago)
+const DONAR_PAYPAL = '' // enlace oficial de Itouch (PayPal)
 
-  useEffect(() => {
-    supabase
-      .from('ajustes_app')
-      .select('donar_mercadopago, donar_paypal')
-      .eq('id', 1)
-      .maybeSingle()
-      .then(({ data }) => {
-        setLinks(data || {})
-        setMp(data?.donar_mercadopago || '')
-        setPp(data?.donar_paypal || '')
-      })
-  }, [])
-
-  const guardar = async () => {
-    const okUrl = (u) => !u.trim() || /^https?:\/\//i.test(u.trim())
-    if (!okUrl(mp) || !okUrl(pp)) {
-      return alert('Los enlaces deben empezar con http:// o https://')
-    }
-    setGuardando(true)
-    setMsg('')
-    const { error } = await supabase
-      .from('ajustes_app')
-      .update({ donar_mercadopago: mp.trim() || null, donar_paypal: pp.trim() || null })
-      .eq('id', 1)
-    setGuardando(false)
-    if (error) return alert('No se pudo: ' + error.message)
-    setLinks({ donar_mercadopago: mp.trim() || null, donar_paypal: pp.trim() || null })
-    setEditar(false)
-    setMsg('Guardado')
-    setTimeout(() => setMsg(''), 1500)
-  }
-
-  const hayLinks = links && (links.donar_mercadopago || links.donar_paypal)
+function Donaciones() {
+  const hayLinks = DONAR_MERCADOPAGO || DONAR_PAYPAL
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
@@ -547,82 +515,33 @@ function Donaciones({ isAdmin }) {
         Esta app se ofrece gratis. Si quieres apoyar su desarrollo, puedes donar.
       </p>
 
-      {!editar && (
-        <div className="flex flex-col gap-2">
-          {links?.donar_mercadopago && (
-            <a
-              href={links.donar_mercadopago}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold py-2.5 text-center"
-            >
-              Donar con Mercado Pago
-            </a>
-          )}
-          {links?.donar_paypal && (
-            <a
-              href={links.donar_paypal}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2.5 text-center"
-            >
-              Donar con PayPal
-            </a>
-          )}
-          {!hayLinks && (
-            <p className="text-xs text-slate-400">
-              Aún no hay enlaces de donación configurados.
-            </p>
-          )}
-          {isAdmin && (
-            <button
-              onClick={() => setEditar(true)}
-              className="text-xs text-teal-600 underline self-start"
-            >
-              {hayLinks ? 'Editar enlaces' : 'Configurar enlaces'}
-            </button>
-          )}
-        </div>
-      )}
-
-      {editar && isAdmin && (
-        <div className="space-y-2">
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">Enlace de Mercado Pago</label>
-            <input
-              value={mp}
-              onChange={(e) => setMp(e.target.value)}
-              placeholder="https://mpago.la/..."
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">Enlace de PayPal</label>
-            <input
-              value={pp}
-              onChange={(e) => setPp(e.target.value)}
-              placeholder="https://paypal.me/..."
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            />
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={guardar}
-              disabled={guardando}
-              className="rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 disabled:opacity-60"
-            >
-              {guardando ? 'Guardando…' : 'Guardar'}
-            </button>
-            <button
-              onClick={() => setEditar(false)}
-              className="rounded-lg border border-slate-300 text-slate-600 text-sm px-4 py-2"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-      {msg && <span className="text-xs text-emerald-600">{msg}</span>}
+      <div className="flex flex-col gap-2">
+        {DONAR_MERCADOPAGO && (
+          <a
+            href={DONAR_MERCADOPAGO}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold py-2.5 text-center"
+          >
+            Donar con Mercado Pago
+          </a>
+        )}
+        {DONAR_PAYPAL && (
+          <a
+            href={DONAR_PAYPAL}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2.5 text-center"
+          >
+            Donar con PayPal
+          </a>
+        )}
+        {!hayLinks && (
+          <p className="text-xs text-slate-400">
+            Muy pronto podrás apoyar al desarrollador desde aquí.
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -730,78 +649,40 @@ function CambiarCorreo({ vecino }) {
 }
 
 function CambiarClave() {
-  const [abierto, setAbierto] = useState(false)
-  const [clave, setClave] = useState('')
-  const [clave2, setClave2] = useState('')
+  const { user, resetPassword } = useAuth()
   const [cargando, setCargando] = useState(false)
   const [msg, setMsg] = useState('')
   const [error, setError] = useState('')
 
-  const guardar = async (e) => {
-    e.preventDefault()
+  const enviar = async () => {
     setError('')
     setMsg('')
-    if (clave.length < 6) return setError('La contraseña debe tener al menos 6 caracteres.')
-    if (clave !== clave2) return setError('Las dos contraseñas no coinciden.')
+    if (!user?.email) return setError('No encontramos tu correo.')
     setCargando(true)
-    const { error } = await supabase.auth.updateUser({ password: clave })
+    const { error } = await resetPassword(user.email)
     setCargando(false)
     if (error) return setError('No se pudo: ' + error.message)
-    setMsg('¡Contraseña actualizada!')
-    setClave('')
-    setClave2('')
-    setAbierto(false)
+    setMsg(
+      'Te enviamos un correo a ' +
+        user.email +
+        '. Ábrelo y ahí eliges tu nueva contraseña. Nada cambia hasta que confirmes desde ese correo.',
+    )
   }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
       <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Contraseña</p>
-      {!abierto ? (
-        <button
-          onClick={() => setAbierto(true)}
-          className="rounded-lg border border-slate-300 text-slate-600 text-sm font-semibold px-4 py-2"
-        >
-          Cambiar contraseña
-        </button>
-      ) : (
-        <form onSubmit={guardar} className="space-y-2">
-          <input
-            type="password"
-            minLength={6}
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-            placeholder="Nueva contraseña (mín. 6)"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
-          />
-          <input
-            type="password"
-            minLength={6}
-            value={clave2}
-            onChange={(e) => setClave2(e.target.value)}
-            placeholder="Repite la contraseña"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
-          />
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={cargando}
-              className="rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 disabled:opacity-60"
-            >
-              {cargando ? 'Guardando…' : 'Guardar contraseña'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setAbierto(false)
-                setError('')
-              }}
-              className="rounded-lg border border-slate-300 text-slate-600 text-sm px-4 py-2"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      )}
+      <p className="text-xs text-slate-500 -mt-1">
+        Por seguridad, el cambio se confirma desde tu correo: te enviamos un enlace y ahí eliges la
+        nueva contraseña.
+      </p>
+      <button
+        onClick={enviar}
+        disabled={cargando}
+        className="rounded-lg border border-slate-300 text-slate-600 text-sm font-semibold px-4 py-2 disabled:opacity-60"
+      >
+        {cargando ? 'Enviando…' : 'Cambiar contraseña'}
+      </button>
       {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
       {msg && <p className="text-sm text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2">{msg}</p>}
     </div>
