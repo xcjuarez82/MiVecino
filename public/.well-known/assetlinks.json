@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "mx.itouch.vecinos",
+      "sha256_cert_fingerprints": [
+        "5F:0B:4C:53:A0:37:C7:3B:F3:15:0F:67:77:B2:D9:24:0F:80:AC:3E:A8:54:0E:F1:34:C3:70:B5:4F:55:C1:6A"
+      ]
+    }
+  }
+]
