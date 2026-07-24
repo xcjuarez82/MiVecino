@@ -445,6 +445,10 @@ function FilaExpandible({ titulo, detalle }) {
   )
 }
 
+// Compra de licencia (Mercado Pago). Tras pagar, Itouch entrega la clave.
+const COMPRAR_LICENCIA_URL = 'https://mpago.la/1X57WjG'
+const PRECIO_LICENCIA = '$160'
+
 function LicenciaConfig({ privada, refrescar }) {
   const [clave, setClave] = useState('')
   const [guardando, setGuardando] = useState(false)
@@ -519,6 +523,21 @@ function LicenciaConfig({ privada, refrescar }) {
           >
             {guardando ? 'Activando…' : 'Activar licencia'}
           </button>
+
+          <div className="border-t border-slate-100 pt-3 mt-1 space-y-2">
+            <p className="text-xs text-slate-500">
+              ¿No tienes clave? Adquiere tu licencia completa ({PRECIO_LICENCIA}). Después del pago,
+              te enviamos tu clave para activarla aquí.
+            </p>
+            <a
+              href={COMPRAR_LICENCIA_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="block text-center rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5"
+            >
+              Comprar licencia — {PRECIO_LICENCIA}
+            </a>
+          </div>
         </>
       )}
       {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
@@ -531,7 +550,7 @@ function LicenciaConfig({ privada, refrescar }) {
 // Enlaces controlados ÚNICAMENTE por el desarrollador (Itouch). NO son editables
 // desde la app: ningún administrador ni vecino puede agregar ni cambiar estos
 // enlaces de cobro. Para actualizarlos se cambian aquí y se vuelve a publicar.
-const DONAR_MERCADOPAGO = '' // enlace oficial de Itouch (Mercado Pago)
+const DONAR_MERCADOPAGO = 'https://link.mercadopago.com.mx/itouchrys' // enlace oficial de Itouch (Mercado Pago)
 const DONAR_PAYPAL = '' // enlace oficial de Itouch (PayPal)
 
 function Donaciones() {
