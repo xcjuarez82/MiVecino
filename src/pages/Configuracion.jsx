@@ -761,9 +761,9 @@ function SalirComunidad() {
     const { data, error } = await supabase.rpc('salir_de_comunidad')
     setCargando(false)
     if (error) return setError('No se pudo: ' + error.message)
-    if (data === 'ultimo_admin') {
+    if (data === 'comunidad_pago') {
       return setError(
-        'Eres el único administrador de esta comunidad. Nombra a otro administrador antes de salir.',
+        'Tu comunidad tiene licencia de pago y eres el único integrante. Para darla de baja, contacta a soporte.',
       )
     }
     await refrescarPerfil()
@@ -777,8 +777,9 @@ function SalirComunidad() {
       </p>
       <p className="text-xs text-slate-500">
         Dejas de pertenecer a <b>{privada?.nombre || 'esta comunidad'}</b>. Tu cuenta y tu correo
-        siguen activos, así que podrás <b>unirte a otra comunidad</b>. El historial de tu casa se
-        conserva.
+        siguen activos, así que podrás <b>unirte a otra comunidad</b>. Si hay más integrantes, otro
+        queda como administrador y el historial se conserva. Si eres el <b>único integrante</b>
+        (comunidad gratuita), la comunidad se borra por completo.
       </p>
       {!abierto ? (
         <button
@@ -842,9 +843,9 @@ function EliminarCuenta() {
     }
     if (error || data?.error) {
       setCargando(false)
-      if (code === 'ultimo_admin') {
+      if (code === 'comunidad_pago') {
         return setError(
-          'Eres el único administrador de la comunidad. Antes de eliminar tu cuenta, nombra a otro administrador o usa “Salir de la comunidad”.',
+          'Tu comunidad tiene licencia de pago y eres el único integrante. Para darla de baja sin perder los datos, contacta a soporte.',
         )
       }
       return setError('No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.')
@@ -858,8 +859,9 @@ function EliminarCuenta() {
     <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3 border border-red-200">
       <p className="text-sm font-semibold text-red-600 uppercase tracking-wide">Eliminar mi cuenta</p>
       <p className="text-xs text-slate-500">
-        Se elimina tu acceso a la app. El <b>historial de pagos y aportaciones de tu casa se
-        conserva</b> para la administración. Esta acción no se puede deshacer.
+        Se elimina tu acceso a la app. Si hay más integrantes, el <b>historial de tu casa se
+        conserva</b> y otro usuario queda como administrador. Si eres el <b>único integrante</b> de
+        una comunidad gratuita, la comunidad y sus datos se borran por completo. No se puede deshacer.
       </p>
 
       {!abierto ? (
