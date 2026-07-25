@@ -98,7 +98,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <div className="text-2xl">🏘️</div>
               <div>
-                <p className="font-semibold text-slate-800">Configurar privada</p>
+                <p className="font-semibold text-slate-800">Configurar comunidad</p>
                 <p className="text-xs text-slate-500">
                   Nombre, dirección y número de casas
                 </p>

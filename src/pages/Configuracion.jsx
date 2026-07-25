@@ -67,6 +67,9 @@ export default function Configuracion() {
       {/* ---- Donaciones al desarrollador ---- */}
       <Donaciones />
 
+      {/* ---- Salir de la comunidad ---- */}
+      <SalirComunidad />
+
       {/* ---- Eliminar cuenta ---- */}
       <EliminarCuenta />
 
@@ -285,7 +288,7 @@ function DatosPrivada({ privada, refrescar }) {
     e.preventDefault()
     setError('')
     setMsg('')
-    if (!nombre.trim()) return setError('El nombre de la privada es obligatorio.')
+    if (!nombre.trim()) return setError('El nombre de la comunidad es obligatorio.')
     // Campo vacío = no cambiar el número de casas (evita dejarlo en 0 sin querer).
     const nCasas = numCasas.trim() === '' ? null : Math.max(parseInt(numCasas, 10) || 0, 0)
     if (nCasas !== null && privada?.max_casas && nCasas > privada.max_casas) {
@@ -309,14 +312,14 @@ function DatosPrivada({ privada, refrescar }) {
   return (
     <form onSubmit={guardar} className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
       <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
-        Datos de la privada
+        Datos de la comunidad
       </p>
       <p className="text-[11px] text-slate-400 -mt-2">
         Este nombre aparece en los recibos (fraccionamiento o condominio).
       </p>
       <div>
         <label className="block text-sm font-medium text-slate-600 mb-1">
-          Nombre de la privada *
+          Nombre de la comunidad *
         </label>
         <input
           value={nombre}
@@ -364,7 +367,7 @@ function DatosPrivada({ privada, refrescar }) {
         disabled={guardando}
         className="w-full rounded-lg bg-teal-600 hover:bg-teal-700 disabled:opacity-60 text-white font-semibold py-2.5"
       >
-        {guardando ? 'Guardando…' : 'Guardar datos de la privada'}
+        {guardando ? 'Guardando…' : 'Guardar datos de la comunidad'}
       </button>
     </form>
   )
@@ -746,6 +749,74 @@ function CambiarClave() {
   )
 }
 
+function SalirComunidad() {
+  const { privada, refrescarPerfil } = useAuth()
+  const [abierto, setAbierto] = useState(false)
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState('')
+
+  const salir = async () => {
+    setError('')
+    setCargando(true)
+    const { data, error } = await supabase.rpc('salir_de_comunidad')
+    setCargando(false)
+    if (error) return setError('No se pudo: ' + error.message)
+    if (data === 'ultimo_admin') {
+      return setError(
+        'Eres el único administrador de esta comunidad. Nombra a otro administrador antes de salir.',
+      )
+    }
+    await refrescarPerfil()
+    window.location.href = '/'
+  }
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3 border border-amber-200">
+      <p className="text-sm font-semibold text-amber-700 uppercase tracking-wide">
+        Salir de la comunidad
+      </p>
+      <p className="text-xs text-slate-500">
+        Dejas de pertenecer a <b>{privada?.nombre || 'esta comunidad'}</b>. Tu cuenta y tu correo
+        siguen activos, así que podrás <b>unirte a otra comunidad</b>. El historial de tu casa se
+        conserva.
+      </p>
+      {!abierto ? (
+        <button
+          onClick={() => setAbierto(true)}
+          className="rounded-lg border border-amber-300 text-amber-700 text-sm font-semibold px-4 py-2 hover:bg-amber-50"
+        >
+          Salir de la comunidad
+        </button>
+      ) : (
+        <div className="space-y-2">
+          <p className="text-xs text-slate-600">
+            ¿Seguro que quieres salir de <b>{privada?.nombre || 'esta comunidad'}</b>?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={salir}
+              disabled={cargando}
+              className="rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
+            >
+              {cargando ? 'Saliendo…' : 'Sí, salir'}
+            </button>
+            <button
+              onClick={() => {
+                setAbierto(false)
+                setError('')
+              }}
+              className="rounded-lg border border-slate-300 text-slate-600 text-sm px-4 py-2"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+      {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+    </div>
+  )
+}
+
 function EliminarCuenta() {
   const { signOut } = useAuth()
   const [abierto, setAbierto] = useState(false)
@@ -759,12 +830,21 @@ function EliminarCuenta() {
     const { data, error } = await supabase.functions.invoke('eliminar-cuenta', {
       method: 'POST',
     })
+    // supabase-js pone el cuerpo del error en error.context (Response) para 4xx/5xx.
+    let code = data?.error
+    if (!code && error?.context?.json) {
+      try {
+        const body = await error.context.json()
+        code = body?.error
+      } catch {
+        /* ignore */
+      }
+    }
     if (error || data?.error) {
       setCargando(false)
-      const code = data?.error
       if (code === 'ultimo_admin') {
         return setError(
-          'Eres el único administrador de la privada. Nombra a otro administrador antes de eliminar tu cuenta.',
+          'Eres el único administrador de la comunidad. Antes de eliminar tu cuenta, nombra a otro administrador o usa “Salir de la comunidad”.',
         )
       }
       return setError('No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.')
