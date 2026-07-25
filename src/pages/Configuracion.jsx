@@ -61,6 +61,23 @@ export default function Configuracion() {
         </div>
       )}
 
+      {/* ---- Manual / Ayuda ---- */}
+      <a
+        href="/manual.html"
+        target="_blank"
+        rel="noreferrer"
+        className="block bg-white rounded-2xl shadow-sm p-4 hover:shadow transition"
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-2xl">📘</div>
+          <div className="min-w-0">
+            <p className="font-semibold text-slate-800">Manual y ayuda</p>
+            <p className="text-xs text-slate-500">Cómo usar la app, paso a paso</p>
+          </div>
+          <div className="ml-auto text-slate-300 text-lg">↗</div>
+        </div>
+      </a>
+
       {/* ---- Información ---- */}
       <Informacion />
 
