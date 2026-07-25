@@ -129,6 +129,25 @@ function CrearPrivada({ onBack, onDone }) {
   )
 }
 
+function traducirUnion(msg = '') {
+  const m = (msg || '').toLowerCase()
+  if (
+    m.includes('permission denied') ||
+    m.includes('jwt') ||
+    m.includes('not authenticated') ||
+    m.includes('iniciar sesión') ||
+    m.includes('401')
+  )
+    return 'Primero confirma tu correo (revisa tu bandeja) e inicia sesión. Luego vuelve a unirte.'
+  if (m.includes('inválido') || m.includes('utilizado') || m.includes('invalid') || m.includes('encontr'))
+    return 'Código inválido, vencido o ya utilizado. Pide al administrador un código nuevo.'
+  if (m.includes('máximo') || m.includes('usuarios') || m.includes('lugares') || m.includes('llena'))
+    return 'Esa casa ya está llena. Pide al administrador que te asigne otra casa o active una licencia.'
+  if (m.includes('suspend'))
+    return 'Tu cuenta en esa privada está suspendida. Contacta al administrador.'
+  return msg || 'No se pudo. Inténtalo de nuevo.'
+}
+
 function CanjearToken({ onBack, onDone }) {
   const [token, setToken] = useState('')
   const [nombre, setNombre] = useState('')
@@ -145,7 +164,7 @@ function CanjearToken({ onBack, onDone }) {
       p_nombre: nombre.trim() || null,
     })
     setCargando(false)
-    if (error) return setError(error.message)
+    if (error) return setError(traducirUnion(error.message))
     await onDone()
   }
 
@@ -180,7 +199,7 @@ function Solicitud({ onBack, onDone }) {
       p_codigo: codigo.trim(),
     })
     setBuscando(false)
-    if (error) return setError(error.message)
+    if (error) return setError(traducirUnion(error.message))
     if (!data || data.length === 0) return setError('No encontré ninguna privada con ese código.')
     setPrivadaNombre(data[0].privada_nombre)
     setCasas(data)
@@ -197,7 +216,7 @@ function Solicitud({ onBack, onDone }) {
       p_nombre: nombre.trim() || null,
     })
     setCargando(false)
-    if (error) return setError(error.message)
+    if (error) return setError(traducirUnion(error.message))
     await onDone()
   }
 
