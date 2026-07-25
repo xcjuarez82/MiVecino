@@ -115,7 +115,7 @@ export default function Dashboard() {
               <div>
                 <p className="font-semibold text-slate-800">Caja / ahorro</p>
                 <p className="text-xs text-slate-500">
-                  Saldo, ingresos y gastos de la privada
+                  Saldo, ingresos y gastos de la comunidad
                 </p>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function Dashboard() {
 
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
             <p className="font-semibold text-amber-900 text-sm mb-1">
-              Datos de tu privada
+              Datos de tu comunidad
             </p>
             <p className="text-xs text-amber-800">
               Código para invitar vecinos:{' '}

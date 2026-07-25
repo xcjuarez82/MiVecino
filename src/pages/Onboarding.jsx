@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
 export default function Onboarding() {
-  const { user, signOut, refrescarPerfil } = useAuth()
+  const { user, signOut } = useAuth()
   const [modo, setModo] = useState('elegir') // elegir | crear | token | solicitud
 
   return (
@@ -24,8 +24,8 @@ export default function Onboarding() {
             </p>
             <BotonModo
               icono="🏗️"
-              titulo="Crear mi privada"
-              texto="Soy administrador y voy a dar de alta mi privada."
+              titulo="Crear mi comunidad"
+              texto="Soy administrador y voy a dar de alta mi comunidad."
               onClick={() => setModo('crear')}
             />
             <BotonModo
@@ -36,21 +36,21 @@ export default function Onboarding() {
             />
             <BotonModo
               icono="📩"
-              titulo="Unirme a mi privada"
-              texto="Tengo el código de la privada y elijo mi casa (el admin me autoriza)."
+              titulo="Unirme a mi comunidad"
+              texto="Tengo el código de la comunidad y elijo mi casa (el admin me autoriza)."
               onClick={() => setModo('solicitud')}
             />
           </div>
         )}
 
         {modo === 'crear' && (
-          <CrearPrivada onBack={() => setModo('elegir')} onDone={refrescarPerfil} />
+          <CrearPrivada onBack={() => setModo('elegir')} onDone={() => { window.location.href = '/' }} />
         )}
         {modo === 'token' && (
-          <CanjearToken onBack={() => setModo('elegir')} onDone={refrescarPerfil} />
+          <CanjearToken onBack={() => setModo('elegir')} onDone={() => { window.location.href = '/' }} />
         )}
         {modo === 'solicitud' && (
-          <Solicitud onBack={() => setModo('elegir')} onDone={refrescarPerfil} />
+          <Solicitud onBack={() => setModo('elegir')} onDone={() => { window.location.href = '/' }} />
         )}
 
         <button
@@ -103,7 +103,7 @@ function CrearPrivada({ onBack, onDone }) {
   const enviar = async (e) => {
     e.preventDefault()
     setError('')
-    if (!nombre.trim()) return setError('Escribe el nombre de la privada.')
+    if (!nombre.trim()) return setError('Escribe el nombre de la comunidad.')
     setCargando(true)
     const { error } = await supabase.rpc('crear_privada_y_admin', {
       p_nombre: nombre.trim(),
@@ -118,13 +118,13 @@ function CrearPrivada({ onBack, onDone }) {
 
   return (
     <form onSubmit={enviar} className="space-y-3">
-      <Encabezado onBack={onBack} titulo="Crear mi privada" />
-      <Campo label="Nombre de la privada *" value={nombre} onChange={setNombre} placeholder="Ej. Privada Los Cipreses" />
+      <Encabezado onBack={onBack} titulo="Crear mi comunidad" />
+      <Campo label="Nombre de la comunidad *" value={nombre} onChange={setNombre} placeholder="Ej. Comunidad Los Cipreses" />
       <Campo label="Dirección" value={direccion} onChange={setDireccion} placeholder="Calle y número" />
       <Campo label="Número de casas" type="number" value={numCasas} onChange={setNumCasas} placeholder="Ej. 20" />
       <Campo label="Tu nombre (administrador)" value={nombreAdmin} onChange={setNombreAdmin} placeholder="Ej. Juan Pérez" />
       {error && <Error texto={error} />}
-      <Boton cargando={cargando} texto="Crear privada" />
+      <Boton cargando={cargando} texto="Crear comunidad" />
     </form>
   )
 }
@@ -144,7 +144,7 @@ function traducirUnion(msg = '') {
   if (m.includes('máximo') || m.includes('usuarios') || m.includes('lugares') || m.includes('llena'))
     return 'Esa casa ya está llena. Pide al administrador que te asigne otra casa o active una licencia.'
   if (m.includes('suspend'))
-    return 'Tu cuenta en esa privada está suspendida. Contacta al administrador.'
+    return 'Tu cuenta en esa comunidad está suspendida. Contacta al administrador.'
   return msg || 'No se pudo. Inténtalo de nuevo.'
 }
 
@@ -193,14 +193,14 @@ function Solicitud({ onBack, onDone }) {
     setError('')
     setCasas([])
     setPrivadaNombre('')
-    if (!codigo.trim()) return setError('Escribe el código de la privada.')
+    if (!codigo.trim()) return setError('Escribe el código de la comunidad.')
     setBuscando(true)
     const { data, error } = await supabase.rpc('casas_por_codigo', {
       p_codigo: codigo.trim(),
     })
     setBuscando(false)
     if (error) return setError(traducirUnion(error.message))
-    if (!data || data.length === 0) return setError('No encontré ninguna privada con ese código.')
+    if (!data || data.length === 0) return setError('No encontré ninguna comunidad con ese código.')
     setPrivadaNombre(data[0].privada_nombre)
     setCasas(data)
   }
@@ -222,10 +222,10 @@ function Solicitud({ onBack, onDone }) {
 
   return (
     <form onSubmit={enviar} className="space-y-3">
-      <Encabezado onBack={onBack} titulo="Unirme a mi privada" />
+      <Encabezado onBack={onBack} titulo="Unirme a mi comunidad" />
       <div>
         <label className="block text-sm font-medium text-slate-600 mb-1">
-          Código de la privada *
+          Código de la comunidad *
         </label>
         <div className="flex gap-2">
           <input
@@ -248,7 +248,7 @@ function Solicitud({ onBack, onDone }) {
       {privadaNombre && (
         <>
           <p className="text-sm text-teal-700 bg-teal-50 rounded-lg px-3 py-2">
-            Privada encontrada: <b>{privadaNombre}</b>
+            Comunidad encontrada: <b>{privadaNombre}</b>
           </p>
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-1">
