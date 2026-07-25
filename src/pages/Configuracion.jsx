@@ -42,13 +42,13 @@ export default function Configuracion() {
           <div>
             <p className="font-semibold text-slate-800">Números de emergencia</p>
             <p className="text-xs text-slate-500">
-              {isAdmin ? 'Agrega y edita los números de la privada' : 'Consulta y llama'}
+              {isAdmin ? 'Agrega y edita los números de la comunidad' : 'Consulta y llama'}
             </p>
           </div>
         </div>
       </Link>
 
-      {/* ---- Datos de la privada (solo admin) ---- */}
+      {/* ---- Datos de la comunidad (solo admin) ---- */}
       {isAdmin && <DatosPrivada privada={privada} refrescar={refrescarPerfil} />}
       {isAdmin && <ParticipacionConfig privada={privada} refrescar={refrescarPerfil} />}
       {isAdmin && <LicenciaConfig privada={privada} refrescar={refrescarPerfil} />}
@@ -424,8 +424,8 @@ function Informacion() {
       <FilaDato etiqueta="Aplicación" valor={APP_NOMBRE} />
       <FilaDato etiqueta="Versión" valor={APP_VERSION} />
       <FilaExpandible titulo="Licencias" detalle="Por ahora la app es gratuita (Free). Estamos preparando planes de pago; por ejemplo, un tercer usuario por casa requerirá una licencia adicional." />
-      <FilaExpandible titulo="Política de privacidad" detalle="Tus datos se usan únicamente para administrar tu privada y no se comparten con terceros. El documento completo estará disponible próximamente en itouch.mx." />
-      <FilaExpandible titulo="Términos de uso" detalle="Al usar la aplicación aceptas darle un uso lícito para la administración de tu privada. El documento completo estará disponible próximamente en itouch.mx." />
+      <FilaExpandible titulo="Política de privacidad" detalle="Tus datos se usan únicamente para administrar tu comunidad y no se comparten con terceros. El documento completo estará disponible próximamente en itouch.mx." />
+      <FilaExpandible titulo="Términos de uso" detalle="Al usar la aplicación aceptas darle un uso lícito para la administración de tu comunidad. El documento completo estará disponible próximamente en itouch.mx." />
     </div>
   )
 }
@@ -484,7 +484,7 @@ function LicenciaConfig({ privada, refrescar }) {
     if (error) {
       const m = error.message || ''
       if (m.includes('CLAVE_INVALIDA')) return setError('Esa clave no es válida.')
-      if (m.includes('CLAVE_USADA')) return setError('Esa clave ya se usó en otra privada.')
+      if (m.includes('CLAVE_USADA')) return setError('Esa clave ya se usó en otra comunidad.')
       return setError('No se pudo: ' + m)
     }
     setMsg(

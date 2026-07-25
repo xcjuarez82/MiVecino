@@ -182,7 +182,7 @@ function PagarCargo({ privada, vecino, cargo, onCerrar, onGuardado }) {
       <form onSubmit={guardar} className="space-y-3">
         <p className="text-xs text-slate-500 bg-slate-50 rounded-lg p-2">
           Te toca <b>{money(cargo.mi_parte)}</b>. Si pagas de más, la diferencia se guarda en la
-          Caja de la privada.
+          Caja de la comunidad.
         </p>
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-1">Monto pagado</label>
@@ -543,7 +543,7 @@ function reciboCargoPDF({ privada, cargo, d, parte, fechaLimite }) {
 
   doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text(privada?.nombre || 'Privada', 40, 60)
+  doc.text(privada?.nombre || 'Comunidad', 40, 60)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   if (privada?.direccion) doc.text(privada.direccion, 40, 76)
@@ -592,7 +592,7 @@ function reciboCargoPDF({ privada, cargo, d, parte, fechaLimite }) {
 
   doc.setFontSize(8)
   doc.setTextColor(150)
-  doc.text('Documento generado por la app de administración de la privada.', 40, 800)
+  doc.text('Documento generado por la app de administración de la comunidad.', 40, 800)
 
   const nombreCasa = d.casa ? `casa-${d.casa}` : 'vecino'
   doc.save(`recibo-${nombreCasa}.pdf`)

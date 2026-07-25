@@ -840,7 +840,7 @@ function reciboPagoPDF({ privada, vecino, pago, concepto }) {
   let y = 34
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(14)
-  doc.text(privada?.nombre || 'Privada', cx, y, { align: 'center' })
+  doc.text(privada?.nombre || 'Comunidad', cx, y, { align: 'center' })
   y += 14
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)

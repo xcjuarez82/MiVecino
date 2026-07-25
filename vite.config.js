@@ -14,7 +14,7 @@ export default defineConfig({
       manifest: {
         name: 'Mi Vecino',
         short_name: 'Mi Vecino',
-        description: 'Comunidad digital: pagos, proyectos, juntas y participación de tu privada.',
+        description: 'Comunidad digital: pagos, proyectos, juntas y participación de tu comunidad.',
         lang: 'es',
         theme_color: '#1b5c99',
         background_color: '#f1f5f9',

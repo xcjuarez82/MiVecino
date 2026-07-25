@@ -12,7 +12,7 @@ export default function PendingApproval() {
         </h1>
         <p className="text-sm text-slate-500">
           Tu solicitud para unirte a{' '}
-          <span className="font-medium">{privada?.nombre || 'la privada'}</span>
+          <span className="font-medium">{privada?.nombre || 'la comunidad'}</span>
           {casa?.identificador ? ` (Casa ${casa.identificador})` : ''} está
           esperando que el administrador confirme que eres el propietario.
         </p>

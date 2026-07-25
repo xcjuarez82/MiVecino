@@ -18,7 +18,7 @@ function AhorroCard({ privada }) {
   if (saldo === null) return null
   return (
     <div className="bg-teal-700 text-white rounded-2xl p-5 shadow">
-      <p className="text-teal-100 text-sm">Ahorro de la privada</p>
+      <p className="text-teal-100 text-sm">Ahorro de la comunidad</p>
       <p className="text-3xl font-bold">{money(saldo)}</p>
     </div>
   )

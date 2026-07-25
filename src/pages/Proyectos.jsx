@@ -408,7 +408,7 @@ function BotonRecibo({ aportacion, onListo }) {
   const generar = async () => {
     setGen(true)
     try {
-      // Traer datos de la privada y el vecino para el recibo
+      // Traer datos de la comunidad y el vecino para el recibo
       const [{ data: privada }, { data: vec }] = await Promise.all([
         supabase.from('privadas').select('nombre, direccion').eq('id', aportacion.privada_id).single(),
         aportacion.vecino_id
@@ -463,7 +463,7 @@ function construirReciboPDF({ aportacion, privada, vecino }) {
 
   doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text(privada?.nombre || 'Privada', 40, 60)
+  doc.text(privada?.nombre || 'Comunidad', 40, 60)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   if (privada?.direccion) doc.text(privada.direccion, 40, 76)
@@ -510,7 +510,7 @@ function construirReciboPDF({ aportacion, privada, vecino }) {
 
   doc.setFontSize(8)
   doc.setTextColor(150)
-  doc.text('Documento generado por la app de administración de la privada.', 40, 800)
+  doc.text('Documento generado por la app de administración de la comunidad.', 40, 800)
 
   return doc.output('blob')
 }
@@ -905,7 +905,7 @@ function FormGasto({ privada, proyecto, onCerrar, onGuardado }) {
           </div>
           {fuente === 'ahorro' && (
             <p className="text-[11px] text-slate-500">
-              El gasto se descuenta de la Caja de ahorro de la privada.
+              El gasto se descuenta de la Caja de ahorro de la comunidad.
             </p>
           )}
           {dividir && (
@@ -1116,7 +1116,7 @@ function FormAportacion({ privada, vecino, isAdmin, onCerrar, onGuardado }) {
               onChange={(e) => setDestino(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
             >
-              <option value="">🏦 Ahorro de la privada</option>
+              <option value="">🏦 Ahorro de la comunidad</option>
               {proyectos.map((p) => (
                 <option key={p.id} value={p.id}>
                   🏗️ Proyecto: {p.titulo}

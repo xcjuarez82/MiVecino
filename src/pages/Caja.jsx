@@ -59,7 +59,7 @@ export default function Caja() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-800">Caja (ahorro de la privada)</h1>
+      <h1 className="text-xl font-bold text-slate-800">Caja (ahorro de la comunidad)</h1>
 
       <div className="bg-teal-700 text-white rounded-2xl p-5 shadow">
         <p className="text-teal-100 text-sm">Saldo actual</p>
@@ -165,7 +165,7 @@ function SaldoVecino({ privada }) {
   }, [privada])
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-slate-800">Ahorro de la privada</h1>
+      <h1 className="text-xl font-bold text-slate-800">Ahorro de la comunidad</h1>
       <div className="bg-teal-700 text-white rounded-2xl p-5 shadow">
         <p className="text-teal-100 text-sm">Saldo actual</p>
         <p className="text-3xl font-bold">{saldo === null ? '…' : money(saldo)}</p>
