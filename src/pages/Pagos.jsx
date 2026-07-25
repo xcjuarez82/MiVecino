@@ -181,6 +181,7 @@ export default function Pagos() {
               pagos={pagos}
               onCambio={cargar}
               monto={0}
+              verComprobante={verComprobante}
             />
           ) : (
             <GridMensual
@@ -206,6 +207,7 @@ export default function Pagos() {
                 pagos={pagos}
                 onCambio={cargar}
                 monto={Number(c.monto || 0)}
+                verComprobante={verComprobante}
               />
             ) : (
               <GridMensual
@@ -295,7 +297,7 @@ export default function Pagos() {
   )
 }
 
-function MarcadoMensualAdmin({ concepto, privada, pagos, onCambio, monto = 0 }) {
+function MarcadoMensualAdmin({ concepto, privada, pagos, onCambio, monto = 0, verComprobante }) {
   const { vecino: admin } = useAuth()
   const [vecinos, setVecinos] = useState([])
   const [anio, setAnio] = useState(new Date().getFullYear())
@@ -501,8 +503,14 @@ function MarcadoMensualAdmin({ concepto, privada, pagos, onCambio, monto = 0 }) 
                   </span>
                 </label>
                 <div className="flex items-center gap-1 shrink-0">
-                  {pago && !esMarcaAdmin(pago) && (
-                    <span className="text-[10px] text-slate-400">ficha del vecino</span>
+                  {pago?.comprobante_url && (
+                    <button
+                      onClick={() => verComprobante(pago.comprobante_url)}
+                      title="Ver el comprobante que subió el vecino"
+                      className="text-[11px] rounded-lg border border-slate-300 text-slate-600 px-2 py-1.5 whitespace-nowrap"
+                    >
+                      🧾 Ver
+                    </button>
                   )}
                   {pago && pago.estatus === 'validado' && (
                     <button
