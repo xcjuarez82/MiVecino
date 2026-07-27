@@ -472,15 +472,30 @@ function FilaExpandible({ titulo, detalle }) {
   )
 }
 
-// Compra de licencia (Mercado Pago). Tras pagar, Itouch entrega la clave.
-const COMPRAR_LICENCIA_URL = 'https://mpago.la/1X57WjG'
+// Compra de licencia: el cobro lo crea la Edge Function crear-pago-licencia y el
+// plan se activa SOLO cuando Mercado Pago confirma el pago (webhook mp-webhook).
 const PRECIO_LICENCIA = '$160'
 
 function LicenciaConfig({ privada, refrescar }) {
   const [clave, setClave] = useState('')
   const [guardando, setGuardando] = useState(false)
+  const [comprando, setComprando] = useState(false)
   const [msg, setMsg] = useState('')
   const [error, setError] = useState('')
+
+  const comprar = async () => {
+    setError('')
+    setMsg('')
+    setComprando(true)
+    const { data, error } = await supabase.functions.invoke('crear-pago-licencia', {
+      method: 'POST',
+    })
+    setComprando(false)
+    if (error || !data?.url) {
+      return setError('No se pudo iniciar el pago en este momento. Inténtalo más tarde.')
+    }
+    window.location.href = data.url
+  }
 
   const maxUsuarios = privada?.max_usuarios_casa ?? 2
   const maxCasas = privada?.max_casas ?? 10
@@ -553,17 +568,17 @@ function LicenciaConfig({ privada, refrescar }) {
 
           <div className="border-t border-slate-100 pt-3 mt-1 space-y-2">
             <p className="text-xs text-slate-500">
-              ¿No tienes clave? Adquiere tu licencia completa ({PRECIO_LICENCIA}). Después del pago,
-              te enviamos tu clave para activarla aquí.
+              ¿No tienes clave? Paga tu licencia completa ({PRECIO_LICENCIA}) y tu plan se activa
+              <b> automáticamente</b> al confirmarse el pago.
             </p>
-            <a
-              href={COMPRAR_LICENCIA_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="block text-center rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5"
+            <button
+              type="button"
+              onClick={comprar}
+              disabled={comprando}
+              className="w-full rounded-lg bg-sky-500 hover:bg-sky-600 disabled:opacity-60 text-white font-semibold py-2.5"
             >
-              Comprar licencia — {PRECIO_LICENCIA}
-            </a>
+              {comprando ? 'Abriendo pago…' : `Comprar licencia — ${PRECIO_LICENCIA}`}
+            </button>
           </div>
         </>
       )}
