@@ -51,7 +51,7 @@ export default function Configuracion() {
       {/* ---- Datos de la comunidad (solo admin) ---- */}
       {isAdmin && <DatosPrivada privada={privada} refrescar={refrescarPerfil} />}
       {isAdmin && <ParticipacionConfig privada={privada} refrescar={refrescarPerfil} />}
-      {isAdmin && <LicenciaConfig privada={privada} refrescar={refrescarPerfil} />}
+      {/* Licencia en pausa — límites universales: 50 casas / 2 usuarios por casa */}
 
       {/* ---- Accesos rápidos del admin ---- */}
       {isAdmin && (
@@ -374,7 +374,7 @@ function DatosPrivada({ privada, refrescar }) {
           </span>
         </p>
         <p className="text-[11px] text-amber-700 mt-1">
-          Tu plan permite hasta {privada?.max_usuarios_casa ?? 2} usuarios por casa y {privada?.max_casas ?? 10} casas. Para más, activa una licencia.
+          Tu comunidad permite hasta {privada?.max_usuarios_casa ?? 2} usuarios por casa y {privada?.max_casas ?? 50} casas.
         </p>
       </div>
       {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
